@@ -17,6 +17,7 @@ class Node
    Node()
    {
       pNext = NULL;
+      pPrev = NULL; //pointers to NULL for safety
    }  
 
 /**********************************
@@ -27,15 +28,17 @@ class Node
    {
       data = dat;
       pNext = NULL;
+      pPrev = NULL;
    }
 };
 
 /**********************************
- * Create copy of Node object.
+ * Copy
+ * Create copy of linked - list
  *********************************/
 template<class T>
 Node <T> *copy (Node <T> *pFront )
-{
+{					//I might suggest some changes here as well, I'll look at it tomorrow - Ken
    Node <T> *copyNode = NULL;
    Node <T> *tempNode = pFront;
    
@@ -62,25 +65,25 @@ Node <T>* insert(Node <T> *&pFront, T newItem, bool isHead = false)
    {
       pFront = itemNode;
    }
-   
    else if (isHead)
    {
       itemNode->pNext = pFront;
+      pFront->pPrev = itemNode;
       pFront = itemNode;
    }
-   
+
    else
    {
-      Node <T> *temp = new Node <T>;
-      temp = itemNode;
-      temp->pNext = pFront->pNext;
+      itemNode->pNext = pFront->pNext;
       pFront->pNext = temp;
+      Node <T> *temp = new Node <T>;
+      temp = itemNode->pNext;	//its not just about whats next, its about what comes before too -Ken
+      temp->pPrev = itemNode;
+      itemNode->pPrev = pFront;
    }
 
    return pFront;
- }
-
-
+}
 
 /***********************************
  * Insert:
@@ -101,15 +104,18 @@ Node <T>* insert(T newItem, Node <T> *&pFront, bool isHead = false)
 	else if (isHead)
 	{
 		itemNode->pNext = pFront;
+		pFront->pPrev = itemNode;
 		pFront = itemNode;
 	}
 
 	else
 	{
-		Node <T> *temp = new Node <T>;
-		temp = itemNode;
-		temp->pNext = pFront->pNext;
+		itemNode->pNext = pFront->pNext;
 		pFront->pNext = temp;
+		Node <T> *temp = new Node <T>;
+		temp = itemNode->pNext;	//its not just about whats next, its about what comes before too -Ken
+		temp->pPrev = itemNode;
+		itemNode->pPrev = pFront;
 	}
 
 	return pFront;
@@ -154,7 +160,6 @@ std::ostream& operator<<(std::ostream &output, Node <T> *pFront)
       {
          output << outputNode->data;
       }
-
       else
       {
          output << outputNode->data << ", ";
@@ -177,7 +182,7 @@ template <class T>
 void freeData(Node <T> *&pFront)
 {
    Node <T> *deleteNode = NULL;
-   Node <T> *tempNode = deleteNode = pFront;
+   Node <T> *tempNode = pFront; //This makes more sense to me, I wan't sure what temp = delete = front was supposed to do - Ken
    while(tempNode != NULL)
    {
       deleteNode = tempNode;
