@@ -2,6 +2,8 @@
 #define NODE_H
 #include <iostream>
 
+//this is Ken, just tryng to figure out how gitHub works. you can ignore this comment
+
 template <class T>
 class Node
 {
