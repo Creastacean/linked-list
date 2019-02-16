@@ -17,6 +17,7 @@ class Node
    Node()
    {
       pNext = NULL;
+      pPrev = NULL;
    }  
 
 /**********************************
@@ -27,11 +28,12 @@ class Node
    {
       data = dat;
       pNext = NULL;
+      pPrev = NULL;
    }
 };
 
 /**********************************
- * Create copy of Node object.
+ * Create copy of Linked List.
  *********************************/
 template<class T>
 Node <T> *copy (Node <T> *pFront )
@@ -39,11 +41,12 @@ Node <T> *copy (Node <T> *pFront )
    Node <T> *copyNode = NULL;
    Node <T> *tempNode = pFront;
    
-   while(tempNode != NULL)
+   do
    {
       insert(tempNode->data, copyNode);
       tempNode = tempNode->pNext;
    }
+   while(tempNode != NULL)
    
    return copyNode;
 }
@@ -51,38 +54,73 @@ Node <T> *copy (Node <T> *pFront )
 /***********************************
  * Insert:
  * A simple function that inserts into
- * various parts of the node as a whole.
+ * various parts of the list as a whole.
  ***************************************/
 template <class T>
-Node <T>* insert(Node <T> *&pFront, T newItem, bool isHead = false)
+Node <T>* insert(Node <T> *&pFront, T newItem, bool after = false)
 {
-   Node <T> *itemNode = new Node<T>(newItem);
-
+   Node <T> *itemNode = new Node<T>(newItem); //making a new node
+   
    if (pFront == NULL)
    {
       pFront = itemNode;
+      return pFront;
    }
    
-   else if (isHead)
+   if(after)
    {
-      itemNode->pNext = pFront;
-      pFront = itemNode;
+      //insert after the passed node
+      // potentially three nodes involved. the one passed, the new node, the next node. they need to end in that order.
+      // first set up the players, we have passed and new, get the next, ad if it is NULL, no biggy.
+      
+      Node <T> *temp = pFront->pNext;  //this represents what will come after the new one;
+      
+      //now we start changing pointers. starting with the passed one
+      pFront->pNext = itemNode; //the referenced one points forward to the new one.
+      
+      //the new one need to point both the the passed one, and the next one
+      itemNode->pPrev = pFront; //the new one points backward to the referenced one
+      itemNode->pNext = temp; //the new one points forward to the next one
+      
+      //now it is possible that the next one soesn't exist and is NULL, if it is we are done, if not have it point back
+      if(temp == NULL)
+      {
+         return itemNode;
+      }
+      else
+      {
+         temp->pPrev = itemNode; //the one that follows the new one now points back to it;
+         return itemNode;
+      }
    }
-   
    else
    {
-      Node <T> *temp = new Node <T>;
-      temp = itemNode;
-      temp->pNext = pFront->pNext;
-      pFront->pNext = temp;
+      //insert before the passed node similar to the after insert, just different
+      //so I need to identify the players again. we have pFront, which will be the back
+      //   itemNode, will be in the middle, and temp will be in the front.
+      Node <T> *temp = pFront->pPrev;
+      
+      //Now we start changing pointers, starting with pFront, which will be in back;
+      pFront->pPrev = itemNode;
+
+      //next is itemNode, which is in the middle,
+      itemNode->pNext = pFront;
+      itemNode->pPrev = temp;
+
+      //Now we handle the case of the NULL pointer in temp.
+      if(temp == NULL)
+      {
+         return itemNode;
+      }
+      else
+      {
+         temp->pNext = itemNode; //the one that follows the new one now points back to it;
+         return itemNode;
+      }
+      
    }
-
-   return pFront;
- }
-
-
-
-/***********************************
+}
+**********************************
  * Insert:
  * A simple function that inserts into
  * various parts of the node as a whole.
@@ -91,28 +129,66 @@ Node <T>* insert(Node <T> *&pFront, T newItem, bool isHead = false)
 template <class T>
 Node <T>* insert(T newItem, Node <T> *&pFront, bool isHead = false)
 {
-	Node <T> *itemNode = new Node<T>(newItem);
+   Node <T> *itemNode = new Node<T>(newItem); //making a new node
+   
+   if (pFront == NULL)
+   {
+      pFront = itemNode;
+      return pFront;
+   }
+   
+   if(after)
+   {
+      //insert after the passed node
+      // potentially three nodes involved. the one passed, the new node, the next node. they need to end in that order.
+      // first set up the players, we have passed and new, get the next, ad if it is NULL, no biggy.
+      
+      Node <T> *temp = pFront->pNext;  //this represents what will come after the new one;
+      
+      //now we start changing pointers. starting with the passed one
+      pFront->pNext = itemNode; //the referenced one points forward to the new one.
+      
+      //the new one need to point both the the passed one, and the next one
+      itemNode->pPrev = pFront; //the new one points backward to the referenced one
+      itemNode->pNext = temp; //the new one points forward to the next one
+      
+      //now it is possible that the next one soesn't exist and is NULL, if it is we are done, if not have it point back
+      if(temp == NULL)
+      {
+         return itemNode;
+      }
+      else
+      {
+         temp->pPrev = itemNode; //the one that follows the new one now points back to it;
+         return itemNode;
+      }
+   }
+   else
+   {
+      //insert before the passed node similar to the after insert, just different
+      //so I need to identify the players again. we have pFront, which will be the back
+      //   itemNode, will be in the middle, and temp will be in the front.
+      Node <T> *temp = pFront->pPrev;
+      
+      //Now we start changing pointers, starting with pFront, which will be in back;
+      pFront->pPrev = itemNode;
 
-	if (pFront == NULL)
-	{
-		pFront = itemNode;
-	}
+      //next is itemNode, which is in the middle,
+      itemNode->pNext = pFront;
+      itemNode->pPrev = temp;
 
-	else if (isHead)
-	{
-		itemNode->pNext = pFront;
-		pFront = itemNode;
-	}
-
-	else
-	{
-		Node <T> *temp = new Node <T>;
-		temp = itemNode;
-		temp->pNext = pFront->pNext;
-		pFront->pNext = temp;
-	}
-
-	return pFront;
+      //Now we handle the case of the NULL pointer in temp.
+      if(temp == NULL)
+      {
+         return itemNode;
+      }
+      else
+      {
+         temp->pNext = itemNode; //the one that follows the new one now points back to it;
+         return itemNode;
+      }
+      
+   }
 }
 
 
@@ -177,7 +253,7 @@ template <class T>
 void freeData(Node <T> *&pFront)
 {
    Node <T> *deleteNode = NULL;
-   Node <T> *tempNode = deleteNode = pFront;
+   Node <T> *tempNode = deleteNode = pFront; //i dont understand this line
    while(tempNode != NULL)
    {
       deleteNode = tempNode;
